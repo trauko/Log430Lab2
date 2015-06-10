@@ -1,5 +1,10 @@
 package ca.etsmtl.log430.common;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 /**
  * This class displays various types of information on projects and resources
@@ -326,7 +331,8 @@ public class Displays {
 				done = true;
 			else 
 			{				
-				boolean donneInnerWhile=false;			
+				boolean donneInnerWhile=false;
+				resource.getPreviouslyAssignedProjectList().goToFrontOfList();
 				while(!donneInnerWhile)
 				{
 					prj=resource.getPreviouslyAssignedProjectList().getNextProject();
@@ -352,7 +358,7 @@ public class Displays {
 			
 		} // while
 		System.out.println("Avant execution");
-		System.out.println("Analyse : "+countRolesBefore[0]);
+		System.out.println("Analyste : "+countRolesBefore[0]);
 		System.out.println("Concepteur : "+countRolesBefore[1]);
 		System.out.println("Programmeur : "+countRolesBefore[2]);
 		System.out.println("Testeur : "+countRolesBefore[3]);
@@ -361,6 +367,114 @@ public class Displays {
 		System.out.println("Concepteur : "+countRolesAfter[1]);
 		System.out.println("Programmeur : "+countRolesAfter[2]);
 		System.out.println("Testeur : "+countRolesAfter[3]);
+	}
+	
+	public boolean isRessourceOverloaded(Resource res,ProjectList pr, Project preAssigned ) throws ParseException
+	{
+	    //Get info from projetlist
+		List<Project> lstProj=new ArrayList<Project>();
+		Project tmpprj=null;
+		boolean done = false;
+		res.getPreviouslyAssignedProjectList().goToFrontOfList();
+		while (!done) 
+		{
+			tmpprj = res.getPreviouslyAssignedProjectList().getNextProject();
+			if (tmpprj == null) 
+				done = true;
+			else 
+			{
+				if(tmpprj!=null)
+					lstProj.add(tmpprj);
+			}
+		}
+		//Completer les informations des projets por la resources res
+		pr.goToFrontOfList();
+		done = false;
+		while(!done)
+		{
+			tmpprj = pr.getNextProject();
+			if (tmpprj == null) 
+				done = true;
+			else 
+			{
+				for(Project p : lstProj)
+				{
+					if(p.getID().equals(tmpprj.getID()))
+					{
+						p.setProjectName(tmpprj.getProjectName());
+						p.setStartDate(tmpprj.getStartDate());
+						p.setEndDate(tmpprj.getEndDate());
+						p.setPriority(tmpprj.getPriority());
+					}
+				}
+			}		
+		}
+		res.getProjectsAssigned().goToFrontOfList();
+		done=false;
+		while (!done) 
+		{
+			tmpprj = res.getPreviouslyAssignedProjectList().getNextProject();
+			if (tmpprj == null) 
+				done = true;
+			else 
+			{
+				if(tmpprj!=null)
+					lstProj.add(tmpprj);
+			}
+		}	
+		return this.canAssignProject(lstProj, preAssigned);
+	}
+	private float getPercentageassigedWork(String str)
+	{
+		float retValue=0F;
+		switch (str) {
+		case "L":
+			retValue=0.25f;
+			break;
+		case "M":	
+			retValue=0.5F;
+			break;
+		case "H":
+			retValue=1.0F;
+			break;
+		}
+		return retValue;
+
+	}
+	
+	private boolean canAssignProject(List<Project> lst,Project preAssigned) throws ParseException
+	{
+		float culmulWork=0;
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+		long calculProjPreAssignedDuree=0;
+		Date preAssignedStartDate=format.parse(preAssigned.getStartDate());
+		Date preAssignedEndDate=format.parse(preAssigned.getEndDate());
+		calculProjPreAssignedDuree=preAssignedEndDate.getTime()-preAssignedStartDate.getTime();
+		for(Project p: lst)
+		{
+			Date localStartDate=format.parse(p.getStartDate());
+			Date localEndDate=format.parse(p.getEndDate());
+			long calculProjLocalDuree=localEndDate.getTime()-localStartDate.getTime();
+			if(preAssignedStartDate.compareTo(localStartDate)+preAssignedEndDate.compareTo(localEndDate)==0)
+				return true;
+			if(calculProjPreAssignedDuree>calculProjLocalDuree)
+			{
+				if(localStartDate.after(preAssignedStartDate) && localStartDate.before(preAssignedEndDate) 
+					|| localEndDate.after(preAssignedStartDate) && localEndDate.before(preAssignedEndDate))
+				{
+					culmulWork+= this.getPercentageassigedWork(p.getPriority());
+				}
+			}
+			else
+			{		
+				if(preAssignedStartDate.after(localStartDate) && preAssignedStartDate.before(localEndDate) 
+					|| preAssignedEndDate.after(localStartDate) &&preAssignedEndDate.before(preAssignedEndDate))
+				{
+					culmulWork+= this.getPercentageassigedWork(p.getPriority());
+				}
+			}
+		}		
+		return culmulWork>1.0F;
 	}
 	
 } // Display

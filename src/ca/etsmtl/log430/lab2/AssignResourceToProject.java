@@ -1,7 +1,9 @@
 package ca.etsmtl.log430.lab2;
 
+import java.text.ParseException;
 import java.util.Observable;
 
+import ca.etsmtl.log430.common.Displays;
 import ca.etsmtl.log430.common.Menus;
 import ca.etsmtl.log430.common.Project;
 import ca.etsmtl.log430.common.Resource;
@@ -48,6 +50,7 @@ public class AssignResourceToProject extends Communication
 		Menus menu = new Menus();
 		Resource myResource = new Resource();
 		Project myProject = new Project();
+		Displays display = new Displays();
 
 		if (registrationNumber.compareTo((Integer)notificationNumber) == 0) {
 			addToReceiverList("ListResourcesComponent");
@@ -73,8 +76,19 @@ public class AssignResourceToProject extends Communication
 					 * If the selected project and resource exist, then complete
 					 * the assignment process.
 					 */
-					myProject.assignResource(myResource);
-					myResource.assignProject(myProject);
+					try {
+						if(!display.isRessourceOverloaded(myResource, CommonData.theListOfProjects.getListOfProjects(), myProject))
+						{
+							myProject.assignResource(myResource);
+							myResource.assignProject(myProject);
+						}
+						else {
+							System.out.println("La ressource est surchargée!");
+						}
+					} catch (ParseException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 				} else {
 					System.out.println("\n\n *** Project not found ***");
 				} 
