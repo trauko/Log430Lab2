@@ -50,7 +50,7 @@ public class SystemInitialize {
 				"ExecutiveComponent");
 		new ListProjectsPreviouslyAssignedToResource(new Integer(106),
 				"ListProjectsPreviouslyAssignedToResourceComponent");
-		new ListAllRolesAssignedToProject(new Integer(107),"ListAllRolesAssignedToProject");
+		new ListAllRolesAssignedToProject(new Integer(107),"ListAllRolesAssignedToProjectComponent");
 
 		// Start the executive
 		executiveComponent.execute();

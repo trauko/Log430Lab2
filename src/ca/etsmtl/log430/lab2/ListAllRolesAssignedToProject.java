@@ -39,7 +39,7 @@ public class ListAllRolesAssignedToProject extends Communication {
 				 * If the project is valid (exists in the list), then we display
 				 * the resources that are assigned to it.
 				 */
-				display.displayResourcesAssignedToProject(myProject);
+				display.displayRoleAssignedToProjet(myProject, CommonData.theListOfResources.getListOfResources());
 			} else {
 				System.out.println("\n\n *** Project not found ***");
 			}

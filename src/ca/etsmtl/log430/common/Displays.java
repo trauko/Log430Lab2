@@ -292,48 +292,75 @@ public class Displays {
 
 	}
 	
-	/**
-	 * Lists the roles that have been assigned to the project.
-	 * 
-	 * @param project
-	 */
-	public void displayAllRolesAssignedToProject(Project project) {
-
-		boolean done;
-		String role;
-
-		System.out.println("\nRoles assigned to: " + " "
-				+ project.getID() + " " + project.getProjectName() + " :");
-		lineCheck(1);
-
-		System.out
-				.println("===========================================================");
-		lineCheck(1);
-
-		project.getResourcesAssigned().goToFrontOfList();
-		done = false;
-
-		while (!done) {
-
-			role = project.getResourcesAssigned().getNextResource().getRole();
-
-			if (role.isEmpty()) {
-
-				done = true;
-
-			} else {
-				displayString(role);
-
-			} // if
-
-		} // while
-
-	}
-	
-	public void displayString(String str)
+	private int[] incrRoleProject(int[] roles,String Role)
 	{
-		System.out.println(str+"\n");
+		switch (Role) {
+		case "ANA":
+			 roles[0]++;
+			break;
+		case "DES":	
+			roles[1]++;
+			break;
+		case "PRG":
+			roles[2]++;
+			break;
+		case "TST":
+			roles[3]++;
+			break;
+
+		}
+		return roles;
 	}
 	
-
+	public void displayRoleAssignedToProjet(Project pr, ResourceList resourceList)
+	{
+		//Role
+		int[] countRolesBefore=new int[4];
+		int[] countRolesAfter=new int[4];
+		Resource resource;
+		Project prj;
+		boolean done = false;
+		while (!done) {
+			resource = resourceList.getNextResource();
+			if (resource == null) 
+				done = true;
+			else 
+			{				
+				boolean donneInnerWhile=false;			
+				while(!donneInnerWhile)
+				{
+					prj=resource.getPreviouslyAssignedProjectList().getNextProject();
+					if (prj == null) 
+						donneInnerWhile = true;
+					else
+					{
+						if(prj.getID().equals(pr.getID()))
+							countRolesBefore=this.incrRoleProject(countRolesBefore, resource.getRole());
+					}		
+				}
+			} // if			
+		}
+		done = false;
+		while (!done) {
+			resource = pr.getResourcesAssigned().getNextResource();
+			if (resource == null) 
+				done = true;
+			else 
+			{				
+				countRolesAfter=this.incrRoleProject(countRolesAfter, resource.getRole());		
+			} // if
+			
+		} // while
+		System.out.println("Avant execution");
+		System.out.println("Analyse : "+countRolesBefore[0]);
+		System.out.println("Concepteur : "+countRolesBefore[1]);
+		System.out.println("Programmeur : "+countRolesBefore[2]);
+		System.out.println("Testeur : "+countRolesBefore[3]);
+		System.out.println("\nApres execution");
+		System.out.println("Analyse : "+countRolesAfter[0]);
+		System.out.println("Concepteur : "+countRolesAfter[1]);
+		System.out.println("Programmeur : "+countRolesAfter[2]);
+		System.out.println("Testeur : "+countRolesAfter[3]);
+	}
+	
 } // Display
