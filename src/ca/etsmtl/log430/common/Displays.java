@@ -166,6 +166,58 @@ public class Displays {
 		} // while
 
 	}
+	
+	public void displayProjectsPreviouslyAssignedToResource(Resource resource,
+			ProjectList projectList) {
+
+		boolean done;
+		Project project;
+		Project tempProject;
+
+		System.out
+				.println("\nProjects previously assigned (in the last session) to : "
+						+ resource.getFirstName()
+						+ " "
+						+ resource.getLastName() + " " + resource.getID());
+		lineCheck(2);
+		System.out
+				.println("========================================================= ");
+		lineCheck(1);
+
+		projectList.goToFrontOfList();
+		resource.getPreviouslyAssignedProjectList().goToFrontOfList();
+		done = false;
+
+		while (!done) {
+			project = resource.getPreviouslyAssignedProjectList().getNextProject();
+			if(project != null)
+			{
+				while ((tempProject = projectList.getNextProject()) != null) {
+					if (tempProject.getID().equals(project.getID())) {
+						project = tempProject;
+					}
+				}
+	
+				projectList.goToFrontOfList();
+	
+				if (project == null || project.getID().isEmpty()) {
+	
+					done = true;
+	
+				} else {
+					displayProject(project);
+					lineCheck(2);
+	
+				} // if
+			}
+			else
+			{
+				done = true;
+			}
+
+		} // while
+
+	}
 
 	/**
 	 * Displays the resources in a resource list. Displays the same information
