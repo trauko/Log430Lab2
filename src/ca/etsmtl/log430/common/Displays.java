@@ -291,5 +291,49 @@ public class Displays {
 		} // while
 
 	}
+	
+	/**
+	 * Lists the roles that have been assigned to the project.
+	 * 
+	 * @param project
+	 */
+	public void displayAllRolesAssignedToProject(Project project) {
+
+		boolean done;
+		String role;
+
+		System.out.println("\nRoles assigned to: " + " "
+				+ project.getID() + " " + project.getProjectName() + " :");
+		lineCheck(1);
+
+		System.out
+				.println("===========================================================");
+		lineCheck(1);
+
+		project.getResourcesAssigned().goToFrontOfList();
+		done = false;
+
+		while (!done) {
+
+			role = project.getResourcesAssigned().getNextResource().getRole();
+
+			if (role.isEmpty()) {
+
+				done = true;
+
+			} else {
+				displayString(role);
+
+			} // if
+
+		} // while
+
+	}
+	
+	public void displayString(String str)
+	{
+		System.out.println(str+"\n");
+	}
+	
 
 } // Display
